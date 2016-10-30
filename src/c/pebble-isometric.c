@@ -11,7 +11,14 @@ static bool s_enabled = true;
 static uint8_t *s_fb_data = NULL;
 
 static void set_pixel(GPoint pixel, GColor color) {
-  universal_fb_set_pixel_color(s_info, gbitmap_get_bounds(s_fb), pixel, color);
+  GColor actual_color = color;
+#if defined(PBL_BW)
+  // Dither black and white if gray requested
+  if(gcolor_equal(color, GColorDarkGray) || gcolor_equal(color, GColorLightGray)) {
+    actual_color = (pixel.x % 2 == 0) ? GColorWhite : GColorBlack;
+  }
+#endif
+  universal_fb_set_pixel_color(s_info, gbitmap_get_bounds(s_fb), pixel, actual_color);
 }
 
 /**
@@ -102,7 +109,14 @@ void isometric_draw_rect(Vec3 origin, GSize size, GColor color) {
 }
 
 void isometric_fill_rect(Vec3 origin, GSize size, GColor color) {
-  for(int i = 0; i < 2; i++) {
+  int iterations = 2;
+#if defined(PBL_BW)
+  // Prevent vertical stipes when dithered gray
+  if(gcolor_equal(color, GColorDarkGray) || gcolor_equal(color, GColorLightGray)) {
+    iterations = 1;
+  }
+#endif
+  for(int i = 0; i < iterations; i++) {
     for(int y = origin.y; y < origin.y + size.h; y++) {
       bresenham_line(
         isometric_project(Vec3(origin.x, y, origin.z)), 

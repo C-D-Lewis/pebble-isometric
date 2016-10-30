@@ -13,6 +13,9 @@ static void update_proc(Layer *layer, GContext *ctx) {
   isometric_fill_box(Vec3(0, 0, 0), GSize(50, 50), 50, GColorYellow);
   isometric_draw_box(Vec3(0, 0, 0), GSize(50, 50), 50, GColorBlack);
 
+  // Dithered fill test
+  isometric_fill_box(Vec3(0, 0, 55), GSize(40, 40), 10, GColorDarkGray);
+
   // Draw medium box
   isometric_fill_box(Vec3(0, 0, 60), GSize(25, 25), 25, GColorBlue);
   isometric_draw_box(Vec3(0, 0, 60), GSize(25, 25), 25, GColorBlack);
